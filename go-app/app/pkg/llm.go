@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
 var (
-	ApiKey = "2bIKnWtDGQMMGBXoMN0bbrg8rzOS0CV9"
+	ApiKey = os.Getenv("API_KEY")
 	Url    = "http://84.201.152.196:8020/v1/completions"
 )
 
