@@ -45,11 +45,18 @@ docker run --env-file .env -p 8000:8000 evraz-cr-bot
 ```
 ### go-app
 ```bash
-
+git clone https://github.com/Trum-ok/evraz-hack
+cd evraz-hack
+cd go-app
+cd app
+go run main.go
 ```
 или
 ```bash
-
+git clone https://github.com/Trum-ok/evraz-hack
+cd evraz-hack
+cd go-app
+docker-compose up --build
 ```
 
 ## Файловая структура проекта
