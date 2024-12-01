@@ -31,7 +31,7 @@
 ### py-app
 ```bash
 git clone https://github.com/Trum-ok/evraz-hack
-cd evraz-hack
+cd evraz-hack/py-app
 pip install -r requirements.txt
 python main.py 
 ```
@@ -39,7 +39,7 @@ python main.py
 
 ```bash
 git clone https://github.com/Trum-ok/evraz-hack
-cd evraz-hack
+cd evraz-hack/py-app
 docker build -t evraz-cr-bot .
 docker run --env-file .env evraz-cr-bot
 ```
