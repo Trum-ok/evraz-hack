@@ -88,7 +88,7 @@ def process_archive(input_fp: str, output_fp: str) -> dict[str, str]:
 
                 file_extension = file.split(".")[-1]
                 sys_prompt = get_sysprompt(file_extension)
-                prompt = get_prompt(file_extension)
+                prompt = get_prompt(file_extension).format(" ")
 
                 if not sys_prompt:
                     print(f"Unsupported file extension: {file_extension}")
