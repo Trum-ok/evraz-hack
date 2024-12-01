@@ -5,6 +5,8 @@ import asyncio
 import logging
 import random
 
+from datetime import datetime
+
 from aiogram import F
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -14,7 +16,7 @@ from aiogram.types import Message, InputMediaDocument, FSInputFile
 from decouple import config
 
 from dev.text import CANT, BLESS, START
-from dev.process import process
+from dev.process import process, after_process
 
 TOKEN = config("TELEGRAM_TOKEN")
 
@@ -35,7 +37,7 @@ async def document_message(message: Message) -> None:
 
     msg = await message.answer(f"Обрабатываю... ({sec} сек.)")
     doc_type =message.document.file_name.split('.')[-1]
-    if doc_type not in ['zip', 'cs', 'py', 'ts', 'js']:
+    if doc_type not in ['zip', 'cs', 'py', 'ts', 'js', 'tsx', 'go']:
         await msg.edit_text(f"Формат *{doc_type}* не поддерживается. Пожалуйста, поробуйте другой файл")
         return
 
@@ -55,21 +57,22 @@ async def document_message(message: Message) -> None:
                 await msg.edit_text("При форматировании файла произошла ошибка, попробуйте позже...")
 
     process_task = asyncio.create_task(increment_timer("processing"))
+    file_name = message.document.file_name
+    file_extension = os.path.splitext(file_name)[1]
     file_id = message.document.file_id
     file = await bot.get_file(file_id)
-    path = rf"./_downloads/{file_id[1:10]}"
+    path = rf"./_downloads/{file_id[1:10]}{file_extension}"
     await bot.download_file(file.file_path, path)
     fp_output = "./_results/" + "".join([str(random.randrange(1, 100)) for _ in range(10)])+'.md'
 
-
     try:
-        d = await asyncio.to_thread(process, path, fp_output)  # Выполняем процесс в отдельном потоке
+        d = await asyncio.to_thread(process, path, fp_output)
     finally:
-        process_flag = False  # Устанавливаем флаг завершения
+        process_flag = False
         formating_flag = False
-        process_task.cancel()  # Завершаем таймер
+        process_task.cancel()
         try:
-            await process_task  # Ожидаем завершение `increment_timer`
+            await process_task
         except asyncio.CancelledError:
             pass
 
@@ -79,19 +82,21 @@ async def document_message(message: Message) -> None:
         return
 
     t = json.loads(d if isinstance(d, str) else json.dumps(d))
-    print(json.loads(d if isinstance(d, str) else json.dumps(d)))
+    print(t)
     process_flag = False
 
-    # formating_flag = True
-    # msg = await msg.edit_text(f"Формирую ответ... ({form_sec} сек.)")
-    # formatting_task = asyncio.create_task(increment_timer("formatting"))
-    # await asyncio.sleep(2.5) # логика форматинга файла
-    # formating_flag = False  # Завершение форматирования
-    # await formatting_task
+    if "error (f)" in t:
+        await msg.edit_text("Произошла фатальная-глобальная-тотальная-мемориальная ошибка при генерации отчета.")
+        return
+
+    formating_flag = True
+    msg = await msg.edit_text(f"Формирую ответ... ({form_sec} сек.)")
 
     if t['path']:
+        after_process(t['path'], t['path'], message.document.file_name, datetime.now())
+
         file_to_attach = FSInputFile(t['path'], filename="CodeReview.md")
-        media = InputMediaDocument(media=file_to_attach, caption="**Code review готов! 🔥**")
+        media = InputMediaDocument(media=file_to_attach, caption="**Code review готов! 🔥**\nТвой код 👇")
 
         await msg.edit_media(media)
         await message.answer_sticker(random.choice(BLESS))
