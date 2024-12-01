@@ -36,6 +36,10 @@ def get_prompt(file_extension: str) -> str:
     return Prompts[file_extension].value if file_extension in Prompts.__members__ else ""
 
 
+def get_file_struct() -> str:
+    pass
+
+
 def process_file(input_fp: str, output_fp: str):
     """
     Обработка файла
@@ -46,7 +50,7 @@ def process_file(input_fp: str, output_fp: str):
     """
     file_extension = input_fp.split(".")[-1]
     sys_prompt = get_sysprompt(file_extension)
-    prompt = get_prompt(file_extension)
+    prompt = get_prompt(file_extension).format(f"└── {input_fp.split("/")[-1]}")
 
     with open(input_fp, "r", encoding='utf-8') as txt_file:
         content = txt_file.read()

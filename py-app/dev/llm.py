@@ -24,19 +24,20 @@ def check_tokens(prompt: str) -> bool:
     return (tokens <= 6144 - 1024 - 50)
 
 
-def send_request(sys_prompt: str, prompt: str, file: bool = False) -> requests.Response:
+def send_request(sys_prompt: str, prompt: str) -> requests.Response:
     """
     Отправка запроса к LLM по API
 
     :args:
-    - prompt `str`: код пользователя 
-    
+    - sys_prompt `str`
+    - prompt `str`: код пользователя
+
     :returns:
     - `requests.Response`: ответ от LLM
     """
     while not check_tokens(prompt):  # проверка количества токенов
-        prompt = prompt[:-100]    
-    
+        prompt = prompt[:-100]
+
     data = {
         "model": "mistral-nemo-instruct-2407",
         "messages": [
@@ -52,7 +53,7 @@ def send_request(sys_prompt: str, prompt: str, file: bool = False) -> requests.R
 
 def finally_generation(text: str, date: str, project_name: str) -> requests.Response:
     t = f"Твоя задача вернуть мне оформленный, красивый MARKDOWN-файл с заголовком формата 'Code-review проекта `название_проекта` от `сегодняшняя_дата`'. Постарайся пожалуйста! Вот CodeReview.md: \n\n{text}"
-    
+
     while not check_tokens(t):
         if len(text) <= 100:
             raise ValueError("Текст слишком короткий для генерации.")

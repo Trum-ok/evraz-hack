@@ -77,12 +77,11 @@ async def document_message(message: Message) -> None:
             pass
 
     d = d if isinstance(d, str) else json.dumps(d)
+    t = json.loads(d if isinstance(d, str) else json.dumps(d))
+    print(t)
     if 'psycopg2.OperationalError' in d:
         await msg.edit_text("Слишком много запросов к API, поробуйте позже...")
         return
-
-    t = json.loads(d if isinstance(d, str) else json.dumps(d))
-    print(t)
     process_flag = False
 
     if "error (f)" in t:
