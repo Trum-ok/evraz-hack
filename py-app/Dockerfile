@@ -1,9 +1,10 @@
-FROM python:3.12.5-alpine:3.20
+FROM python:3.12.5-alpine
 
 WORKDIR /app
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 COPY . .
 RUN pip install python-dotenv
