@@ -50,11 +50,11 @@ def process_file(input_fp: str, output_fp: str):
     """
     file_extension = input_fp.split(".")[-1]
     sys_prompt = get_sysprompt(file_extension)
-    prompt = get_prompt(file_extension).format(f"└── {input_fp.split("/")[-1]}")
+    prompt = get_prompt(file_extension).format(files=f"└── {input_fp.split("/")[-1]}")
 
     with open(input_fp, "r", encoding='utf-8') as txt_file:
         content = txt_file.read()
-    response = send_request(sys_prompt, prompt+content, file=True)
+    response = send_request(sys_prompt, prompt+content)
 
     if response.status_code != 200:
         return {"error (g)": response.text.encode().decode('unicode_escape')}
@@ -84,20 +84,17 @@ def process_archive(input_fp: str, output_fp: str) -> dict[str, str]:
     with open(input_fp, 'rb') as archive_file:
         with ZipFile(archive_file, 'r') as archive:
             for file in archive.namelist():
-                print(f"file: {file}")
-
                 file_extension = file.split(".")[-1]
                 sys_prompt = get_sysprompt(file_extension)
-                prompt = get_prompt(file_extension).format(" ")
+                prompt = get_prompt(file_extension).format(files=" ")
 
                 if not sys_prompt:
-                    print(f"Unsupported file extension: {file_extension}")
                     continue
 
                 with archive.open(file) as nested_file:
                     file_contents = nested_file.read().decode('utf-8')
 
-                response = send_request(sys_prompt, prompt+file_contents, file=True)
+                response = send_request(sys_prompt, prompt+file_contents)
                 if response.status_code != 200:
                     return {"error (g)": response.text.encode().decode('unicode_escape')}
 
