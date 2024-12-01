@@ -36,7 +36,7 @@
 git clone https://github.com/Trum-ok/evraz-hack
 cd evraz-hack/py-app
 pip install -r requirements.txt
-python main.py 
+python run.py 
 ```
 или
 
@@ -44,9 +44,9 @@ python main.py
 git clone https://github.com/Trum-ok/evraz-hack
 cd evraz-hack/py-app
 docker build -t evraz-cr-bot .
-docker run --env-file .env evraz-cr-bot
+docker run -e TELEGRAM_TOKEN=токен -e API_KEY=апи_ключ -e URL=http://циферки/v1/completions evraz-cr-bot
 ```
-### go-app
+### go-app - более эффективная обработка архивов
 ```bash
 git clone https://github.com/Trum-ok/evraz-hack
 cd evraz-hack
