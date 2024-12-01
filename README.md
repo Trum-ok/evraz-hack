@@ -4,7 +4,7 @@
 ## Инструмент для code-review C#\Python\JS\TS\TSX\Go-lang кода
 
 - **[Телеграм-бот](https://t.me/EVRAZ_CR_bot)**
-- **[Веб-сайт]()** *(in dev)* 
+- **[Веб-сайт](https://evrasa-dq2203.amvera.io/)**
 - **[Сайт хакатона](https://xn--80aaaairqt2ajzt9a.xn--p1ai/)**
 - **[Презентация](https://www.figma.com/slides/GzNeGO8u0tvLKLr9V58SVf/%D0%95%D0%B2%D1%80%D0%B0%D0%B7?node-id=1-66&t=eREjkzmXZVj3xbhI-1)**
 
