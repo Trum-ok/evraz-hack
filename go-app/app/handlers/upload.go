@@ -16,6 +16,7 @@ var Count int = 0
 
 func UploadFormHandler(c echo.Context) error {
 	// Пути к HTML-шаблону
+
 	htmlFiles := []string{
 		filepath.Join("./", "templates", "upload.html"),
 	}
@@ -33,6 +34,7 @@ func UploadFileHandler(c echo.Context) error {
 	// Формируем директорию для сохранения файлов
 	uploadDir := "./uploads"
 	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+		c.Logger().Error("Произошла ошибка: ", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Не удалось создать директорию для загрузки",
 		})
@@ -41,6 +43,7 @@ func UploadFileHandler(c echo.Context) error {
 	// Перебираем все файлы из запроса
 	form, err := c.MultipartForm()
 	if err != nil {
+		c.Logger().Error("Произошла ошибка: ", err)
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ошибка при чтении формы",
 		})
@@ -53,6 +56,7 @@ func UploadFileHandler(c echo.Context) error {
 			// Обработка zip файлов
 			_, err = pkg.OpenAllCFilesInZipWithStructure(file)
 			if err != nil {
+				c.Logger().Error("Произошла ошибка: ", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{
 					"error": fmt.Sprintf("Ошибка при обработке zip файла: %v", err),
 				})
@@ -71,6 +75,7 @@ func UploadFileHandler(c echo.Context) error {
 			// Открываем файл из формы
 			src, err := file.Open()
 			if err != nil {
+				c.Logger().Error("Произошла ошибка: ", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{
 					"error": "Ошибка при открытии файла",
 				})
@@ -78,6 +83,7 @@ func UploadFileHandler(c echo.Context) error {
 			defer src.Close()
 			content, err := io.ReadAll(src)
 			if err != nil {
+				c.Logger().Error("Произошла ошибка: ", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{
 					"error": "Ошибка при чтении файла",
 				})
@@ -87,6 +93,7 @@ func UploadFileHandler(c echo.Context) error {
 			if extension == ".cs" {
 				text, err = pkg.ProcessFile(string(content), 5200, pkg.СGetRequestToLlm)
 				if err != nil {
+					c.Logger().Error("Произошла ошибка: ", err)
 					return c.JSON(http.StatusInternalServerError, map[string]string{
 						"error": fmt.Sprintf("Ошибка при обработке файла: %v", err),
 					})
@@ -95,6 +102,7 @@ func UploadFileHandler(c echo.Context) error {
 			if extension == ".py" {
 				text, err = pkg.ProcessFile(string(content), 5000, pkg.PythonGetRequestToLlm)
 				if err != nil {
+					c.Logger().Error("Произошла ошибка: ", err)
 					return c.JSON(http.StatusInternalServerError, map[string]string{
 						"error": fmt.Sprintf("Ошибка при обработке файла: %v", err),
 					})
@@ -103,6 +111,7 @@ func UploadFileHandler(c echo.Context) error {
 			if extension == ".js" || extension == ".ts" || extension == ".tsx" {
 				text, err = pkg.ProcessFile(string(content), 5200, pkg.JsGetRequestToLlm)
 				if err != nil {
+					c.Logger().Error("Произошла ошибка: ", err)
 					return c.JSON(http.StatusInternalServerError, map[string]string{
 						"error": fmt.Sprintf("Ошибка при обработке файла: %v", err),
 					})
@@ -111,6 +120,7 @@ func UploadFileHandler(c echo.Context) error {
 			if extension == ".go" {
 				text, err = pkg.ProcessFile(string(content), 5200, pkg.JsGetRequestToLlm)
 				if err != nil {
+					c.Logger().Error("Произошла ошибка: ", err)
 					return c.JSON(http.StatusInternalServerError, map[string]string{
 						"error": fmt.Sprintf("Ошибка при обработке файла: %v", err),
 					})
@@ -124,6 +134,7 @@ func UploadFileHandler(c echo.Context) error {
 	mdFileName := "files.md"
 	mdFile, err := os.Create("./uploads/" + mdFileName)
 	if err != nil {
+		c.Logger().Error("Произошла ошибка: ", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": fmt.Sprintf("Ошибка при создании .md файла: %v", err),
 		})
